@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.beatbox.databinding.FragmentBeatBoxBinding;
@@ -21,6 +22,7 @@ import java.util.List;
 public class BeatBoxFragment extends Fragment {
 
     private BeatBox mBeatBox;
+    private TextView mPlayBackSpeedView;
 
     public static BeatBoxFragment newInstance() {
         return new BeatBoxFragment();
@@ -29,6 +31,8 @@ public class BeatBoxFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true); // haelt BeatBox-Instanz auch bei Rotationen am Leben (wird also nicht zerstoert und neu aufgebaut)
+
         mBeatBox=new BeatBox(getActivity());
     }
 
@@ -39,8 +43,35 @@ public class BeatBoxFragment extends Fragment {
 
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3)); // gridlayout mit jeweils 3 knoepfen in einer zeile
         binding.recyclerView.setAdapter(new SoundAdapter(mBeatBox.getSounds()));
+        mPlayBackSpeedView=binding.playbackSpeedView;
+        // binding.playbackSpeedView.setText("Playback Speed: "+ 100*mBeatBox.getPlayBackRate() + "%");
+        binding.playbackSpeedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    mBeatBox.setPlayBackRate(0.5f+((float)progress/100));
+                    mPlayBackSpeedView.setText("Playback Speed: "+ 100*mBeatBox.getPlayBackRate() + "%");
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        mBeatBox.release();
     }
 
 

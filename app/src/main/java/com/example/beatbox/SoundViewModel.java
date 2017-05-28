@@ -28,4 +28,8 @@ public class SoundViewModel extends BaseObservable{ // verknuepft den view (list
         mSound=sound;
         notifyChange(); // sagt der Binding-Klasse, dass alle Bindable-Fields (hier der Titel) der Objekte aktualisiert wurden
     }
+
+    public void onButtonClicked() {
+        mBeatBox.play(mSound);
+    }
 }
